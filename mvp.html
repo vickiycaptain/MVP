@@ -1,0 +1,232 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>МиксДринк MVP</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;700&family=Manrope:wght@400;600;700&display=swap">
+<style>
+:root{--bg:#2B0813;--bg2:#5A1530;--rose:#F4C6D0;--rose2:#E7A3B3;--cream:#F8F2E2;--muted:#C99AA6;--line:rgba(244,198,208,.22);
+--f-display:'Cormorant Garamond','Liberation Serif',Georgia,serif;--f-body:'Manrope','Liberation Sans',Arial,sans-serif;color-scheme:dark}
+html,body{height:100%}
+body{margin:0;background:radial-gradient(ellipse at 50% 20%,#6A1534 0%,var(--bg2) 35%,var(--bg) 100%) fixed;background-color:var(--bg);color:var(--cream);font-family:var(--f-body);font-size:15px;line-height:1.45}
+.wrap{max-width:760px;margin:0 auto;padding:18px max(16px,env(safe-area-inset-right,0px)) 28px max(16px,env(safe-area-inset-left,0px));display:flex;flex-direction:column;gap:14px}
+header{text-align:center}
+h1{font-family:var(--f-display);font-weight:700;font-size:clamp(32px,7vw,46px);letter-spacing:.05em;margin:0;color:var(--rose);line-height:1}
+.sub{font-family:var(--f-display);font-style:italic;font-size:18px;color:var(--rose2);margin-top:4px}
+.stage{position:relative;border-radius:18px;overflow:hidden;background:radial-gradient(circle at 50% 40%,rgba(244,198,208,.12),transparent 62%);box-shadow:inset 0 0 0 1px var(--line);touch-action:pan-y;user-select:none;-webkit-user-select:none}
+svg{display:block;width:100%;height:min(64vh,560px);min-height:380px}
+.hint{position:absolute;left:12px;top:10px;font-size:12px;color:var(--muted);letter-spacing:.04em}
+.tag{position:absolute;right:12px;top:10px;font-size:12px;color:var(--muted);text-align:right}
+.panel{display:grid;gap:12px;background:rgba(122,38,56,.35);border:1px solid var(--line);border-radius:16px;padding:14px}
+.status{text-align:center;font-weight:700;color:var(--rose);font-size:16px;min-height:46px;display:flex;align-items:center;justify-content:center}
+.btns{display:flex;gap:10px;justify-content:center}
+button{font:600 15px var(--f-body);border:0;border-radius:999px;padding:10px 20px;cursor:pointer;background:transparent;color:var(--rose);box-shadow:inset 0 0 0 1.5px var(--rose2)}
+button:focus-visible{outline:2px solid var(--rose);outline-offset:3px}
+.steps{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}
+.step{background:rgba(43,8,19,.55);border-radius:12px;padding:8px 9px;border:1px solid var(--line);min-width:0}
+.step b{font-family:var(--f-display);font-size:18px;color:var(--rose);display:block;line-height:1.05}
+.step p{margin:4px 0 0;font-size:12px}
+.step.on{border-color:var(--rose2);background:rgba(162,60,85,.42)}
+.step.done{opacity:.5}
+.specs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;font-size:12.5px;color:var(--muted);text-align:center}
+.specs b{display:block;font-family:var(--f-display);font-size:20px;color:var(--rose)}
+footer{text-align:center;font-size:12px;color:var(--muted);letter-spacing:.08em}
+[data-hit]{cursor:pointer}
+@media (max-width:600px){.steps{grid-template-columns:repeat(2,minmax(0,1fr))}.specs{grid-template-columns:repeat(2,minmax(0,1fr))}}
+</style></head><body>
+<div class="wrap">
+<header><h1>МиксДринк · MVP</h1><div class="sub">собери отсек сам - нажимай на предметы</div></header>
+<div class="stage">
+<svg id="svg" viewBox="0 0 400 580" aria-label="Интерактивная модель отсека МиксДринк">
+<defs>
+<linearGradient id="gBody" x1="0" x2="1"><stop offset="0" stop-color="#CDBE9C"/><stop offset=".35" stop-color="#F6EEDA"/><stop offset=".6" stop-color="#EFE5CC"/><stop offset="1" stop-color="#BFAE89"/></linearGradient>
+<linearGradient id="gCap" x1="0" x2="1"><stop offset="0" stop-color="#0D0D0F"/><stop offset=".38" stop-color="#4A4A50"/><stop offset=".55" stop-color="#2A2A2E"/><stop offset="1" stop-color="#0A0A0B"/></linearGradient>
+<linearGradient id="gLid" x1="0" x2="1"><stop offset="0" stop-color="#174FA8" stop-opacity=".92"/><stop offset=".4" stop-color="#5C9BEA" stop-opacity=".8"/><stop offset=".7" stop-color="#2E6FCF" stop-opacity=".85"/><stop offset="1" stop-color="#123F8C" stop-opacity=".95"/></linearGradient>
+<linearGradient id="gIns" x1="0" x2="1"><stop offset="0" stop-color="#1D4F9C"/><stop offset=".5" stop-color="#3D7BD3"/><stop offset="1" stop-color="#1A4790"/></linearGradient>
+<linearGradient id="gSpout" x1="0" x2="1"><stop offset="0" stop-color="#151517"/><stop offset=".45" stop-color="#5A5A60"/><stop offset="1" stop-color="#121214"/></linearGradient>
+<linearGradient id="gBottle" x1="0" x2="1"><stop offset="0" stop-color="#2E63B8" stop-opacity=".78"/><stop offset=".35" stop-color="#6FA2EE" stop-opacity=".45"/><stop offset="1" stop-color="#244F95" stop-opacity=".82"/></linearGradient>
+<linearGradient id="gWater" x1="0" x2="0" y1="0" y2="1"><stop offset="0" id="w1" stop-color="#BFE0FA" stop-opacity=".75"/><stop offset="1" id="w2" stop-color="#7FB5E8" stop-opacity=".85"/></linearGradient>
+<linearGradient id="gJar" x1="0" x2="1"><stop offset="0" stop-color="#3B0E1C"/><stop offset=".4" stop-color="#7A2638"/><stop offset="1" stop-color="#3B0E1C"/></linearGradient>
+<radialGradient id="gInner"><stop offset="0" stop-color="#E7DCC2"/><stop offset="1" stop-color="#B9A983"/></radialGradient>
+</defs>
+<g id="world"></g>
+</svg>
+<div class="hint">↔ крути отсек пальцем</div><div class="tag">модель MVP<br>57 × 56 мм</div></div>
+<div class="panel">
+<div class="status" id="status"></div>
+<div class="steps">
+<div class="step"><b>1. Засыпь</b><p>нажми на банку с добавкой</p></div>
+<div class="step"><b>2. Закрути</b><p>нажми на отсек - он встанет на бутылку</p></div>
+<div class="step"><b>3. Закрой</b><p>нажми на крышку</p></div>
+<div class="step"><b>4. Поверни</b><p>нажми на рычаг сбоку отсека</p></div>
+<div class="step"><b>5. Пей</b><p>нажми на бутылку, чтобы встряхнуть</p></div>
+</div>
+<div class="btns"><button id="reset">Начать сначала</button></div>
+</div>
+<div class="specs"><div><b>~10 г</b>добавки</div><div><b>~160°</b>поворот дна</div><div><b>3</b>детали</div><div><b>PETG</b>3D-печать</div></div>
+<footer>КОМАНДА «ЭЛЛАДА» · «МИКСДРИНК» - ТО, С ЧЕМ ТРЕНИРОВАТЬСЯ УДОБНЕЕ</footer>
+</div>
+<script>
+(function(){
+const NS='http://www.w3.org/2000/svg',W=document.getElementById('world'),svg=document.getElementById('svg');
+const el=(t,a,p)=>{const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);(p||W).appendChild(e);return e};
+const CX=200,R=50,HH=54,RY=13,NECK=320,START=160*Math.PI/180,OPEN=100*Math.PI/180;
+const INIT=()=>({fill:0,compX:200,compY:150,compRot:0,disk:START,dissolve:0,shake:0,fall:0,jarTilt:0,pour:0,capX:336,capY:128,capS:.62,capRot:0,capOn:0});
+let st=INIT(),view=.6,vel=0,auto=true;
+const gBottle=el('g',{'data-hit':'bottle'}),gJar=el('g',{'data-hit':'jar'}),gBack=el('g'),gComp=el('g',{'data-hit':'comp'}),gFront=el('g'),gCap=el('g',{'data-hit':'cap'}),gPow=el('g',{'pointer-events':'none'}),gInset=el('g',{'pointer-events':'none'}),gPoint=el('g',{'pointer-events':'none'});
+// bottle (frosted blue, wide neck with flange and strap)
+const n=NECK,b=574,BR=62,NR=43;
+const bBody=el('path',{fill:'url(#gBottle)',stroke:'#9CC2F5','stroke-opacity':.5,'stroke-width':1.5},gBottle);
+bBody.setAttribute('d',`M${CX-NR} ${n}L${CX-NR} ${n+20}C${CX-NR} ${n+30} ${CX-BR} ${n+28} ${CX-BR} ${n+46}L${CX-BR} ${b-16}Q${CX-BR} ${b} ${CX-BR+16} ${b}L${CX+BR-16} ${b}Q${CX+BR} ${b} ${CX+BR} ${b-16}L${CX+BR} ${n+46}C${CX+BR} ${n+28} ${CX+NR} ${n+30} ${CX+NR} ${n+20}L${CX+NR} ${n}Z`);
+el('ellipse',{cx:CX,cy:n,rx:NR,ry:10,fill:'#2E63B8','fill-opacity':.55,stroke:'#9CC2F5','stroke-opacity':.6},gBottle);
+[6,12].forEach(d=>el('path',{d:`M${CX-NR} ${n+d}A${NR} 10 0 0 0 ${CX+NR} ${n+d}`,fill:'none',stroke:'#244F95','stroke-width':1.6,'stroke-opacity':.7},gBottle));
+const bWater=el('path',{fill:'url(#gWater)'},gBottle);
+const wt=n+86;bWater.setAttribute('d',`M${CX-BR+4} ${wt}L${CX-BR+4} ${b-14}Q${CX-BR+4} ${b-4} ${CX-BR+16} ${b-4}L${CX+BR-16} ${b-4}Q${CX+BR-4} ${b-4} ${CX+BR-4} ${b-14}L${CX+BR-4} ${wt}A${BR-4} 9 0 0 0 ${CX-BR+4} ${wt}Z`);
+el('path',{fill:'#fff','fill-opacity':.16,d:`M${CX-50} ${n+70}h8v190h-8z`},gBottle);
+// flange ring with side tab
+el('path',{d:`M${CX+BR-6} ${n+20}l22 2a5 5 0 0 1 0 12l-22 2z`,fill:'#2F67C2',stroke:'#9CC2F5','stroke-opacity':.5},gBottle);
+el('ellipse',{cx:CX,cy:n+24,rx:BR-2,ry:9,fill:'none',stroke:'#3A72CC','stroke-width':6},gBottle);
+el('ellipse',{cx:CX,cy:n+22,rx:BR-2,ry:9,fill:'none',stroke:'#8DB8F2','stroke-width':1.2,'stroke-opacity':.7},gBottle);
+// strap
+el('path',{d:`M${CX+BR+12} ${n+30}C${CX+BR+16} ${n+60} ${CX+BR+10} ${n+90} ${CX+BR+8} ${b-30}`,fill:'none',stroke:'#2F5FAE','stroke-width':15,'stroke-linecap':'round'},gBottle);
+el('path',{d:`M${CX+BR+12} ${n+30}C${CX+BR+16} ${n+60} ${CX+BR+10} ${n+90} ${CX+BR+8} ${b-30}`,fill:'none',stroke:'#8FB6EC','stroke-width':11,'stroke-dasharray':'2 4','stroke-opacity':.45},gBottle);
+el('rect',{x:CX+BR,y:n+150,width:20,height:30,rx:4,fill:'#151517',stroke:'#3A3A40'},gBottle);
+el('rect',{x:CX+BR+5,y:n+157,width:10,height:16,rx:2,fill:'#2F5FAE'},gBottle);
+// jar
+const jar=el('g',{},gJar);
+el('circle',{cx:0,cy:0,r:58,fill:'transparent'},jar);
+el('rect',{x:-30,y:-34,width:60,height:74,rx:8,fill:'url(#gJar)',stroke:'#2B0813'},jar);
+el('rect',{x:-32,y:-46,width:64,height:16,rx:4,fill:'#E7DCC2',stroke:'#B9A983'},jar);
+el('rect',{x:-27,y:-16,width:54,height:32,rx:3,fill:'#F8F2E2'},jar);el('rect',{x:-27,y:10,width:54,height:6,fill:'#EC8FB4'},jar);
+const jt2=el('text',{x:0,y:6,'text-anchor':'middle','font-size':6,fill:'#7A2638','font-family':'Manrope,Liberation Sans,sans-serif'},jar);jt2.textContent='протеин · креатин';
+const jt=el('text',{x:0,y:-3,'text-anchor':'middle','font-size':9,'font-weight':700,fill:'#7A2638','font-family':'Manrope,Liberation Sans,sans-serif'},jar);jt.textContent='ИЗОТОНИК';
+// compartment
+const lever=el('g',{'data-hit':'lever'},gBack);
+const lvHit=el('circle',{r:24,fill:'transparent'},lever);
+const lvBar=el('rect',{width:18,height:10,rx:4,fill:'#EFE4CB',stroke:'#B9A983'},lever);
+const lvKnob=el('circle',{r:6,fill:'#F4EBD6',stroke:'#B9A983'},lever);
+const body=el('path',{fill:'url(#gBody)',stroke:'#A8987A'},gComp);
+const seam=el('path',{fill:'none',stroke:'#9E8C66','stroke-width':3,'stroke-opacity':.7},gComp);
+const layers=[];for(let i=0;i<12;i++)layers.push(el('path',{fill:'none',stroke:'#8E7D5A','stroke-opacity':.13,'stroke-width':.8},gComp));
+const neckR=el('path',{fill:'url(#gBody)',stroke:'#A8987A'},gComp);
+
+const topRim=el('ellipse',{fill:'url(#gInner)',stroke:'#A8987A','stroke-width':1.2},gComp);
+const powderTop=el('ellipse',{fill:'#EC8FB4'},gComp);
+const parts=[0,1,2].map(()=>el('line',{stroke:'#F3EAD3','stroke-width':4,'stroke-linecap':'round'},gComp));
+const hub=el('ellipse',{fill:'#F6EEDA',stroke:'#B9A983'},gComp);
+// flip-top cap like the real bottle (black collar, blue insert, translucent blue lid, side button)
+const cap=el('g',{},gCap);
+el('circle',{r:70,fill:'transparent'},cap);
+const btnBack=el('g',{},cap);
+const collar=el('path',{fill:'url(#gCap)',stroke:'#3A3A40'},cap);
+const ins=el('path',{fill:'url(#gIns)',stroke:'#0E0E10','stroke-width':1},cap);
+const lid=el('path',{fill:'url(#gLid)',stroke:'#0F3A80','stroke-width':1},cap);
+const lidIn=el('rect',{fill:'#0B2A5E','fill-opacity':.35,rx:4},cap);
+const lidTop=el('ellipse',{fill:'#4F8DE0','fill-opacity':.75,stroke:'#9CC6F7','stroke-opacity':.7},cap);
+const lidHi=el('path',{fill:'none',stroke:'#fff','stroke-opacity':.35,'stroke-width':2,'stroke-linecap':'round'},cap);
+const btnFront=el('g',{},cap);
+const btn=el('g',{},btnFront);
+const btnR=el('rect',{width:13,height:34,rx:5,fill:'#141416',stroke:'#3A3A40'},btn);
+const btnC=el('circle',{r:3.5,fill:'#2F6FC9',stroke:'#0E0E10'},btn);
+// powder
+const P=[];for(let i=0;i<90;i++)P.push({c:el('circle',{r:2.2+Math.random()*1.8,fill:'#EC8FB4'},gPow),s:0});
+const PS=[];for(let i=0;i<40;i++)PS.push({c:el('circle',{r:2+Math.random()*1.5,fill:'#EC8FB4'},gPow),t:Math.random()});
+// inset
+const inset=el('g',{transform:'translate(336,205)'},gInset);
+el('circle',{r:40,fill:'rgba(43,8,19,.65)',stroke:'rgba(244,198,208,.4)'},inset);
+const iFix=el('path',{fill:'#E4D6B8'},inset),iDisk=el('path',{fill:'#F6EEDA','fill-opacity':.92,stroke:'#B9A983'},inset);
+el('circle',{r:5,fill:'#CDBE9C'},inset);
+const iT1=el('text',{y:-48,'text-anchor':'middle','font-size':10,fill:'#C99AA6','font-family':'Manrope,Liberation Sans,sans-serif'},inset);iT1.textContent='вид снизу';
+const iTxt=el('text',{y:56,'text-anchor':'middle','font-size':11,'font-weight':700,fill:'#F4C6D0','font-family':'Manrope,Liberation Sans,sans-serif'},inset);
+// pointer
+const ring2=el('circle',{fill:'rgba(244,198,208,.14)',stroke:'none'},gPoint);
+const ring=el('circle',{fill:'none',stroke:'#F4C6D0','stroke-width':3},gPoint);
+const ptxt=el('text',{'text-anchor':'middle','font-size':14,'font-weight':700,fill:'#fff','font-family':'Manrope,Liberation Sans,sans-serif',stroke:'#2B0813','stroke-width':3,'paint-order':'stroke'},gPoint);
+function sector(r,a0,a1){const x0=Math.cos(a0)*r,y0=-Math.sin(a0)*r,x1=Math.cos(a1)*r,y1=-Math.sin(a1)*r,l=((a1-a0)%(2*Math.PI)+2*Math.PI)%(2*Math.PI)>Math.PI?1:0;return `M0 0L${x0} ${y0}A${r} ${r} 0 ${l} 0 ${x1} ${y1}Z`}
+const cyl=(cx,t,bt,r,ry)=>`M${cx-r} ${t}L${cx-r} ${bt}A${r} ${ry} 0 0 0 ${cx+r} ${bt}L${cx+r} ${t}A${r} ${ry} 0 0 1 ${cx-r} ${t}Z`;
+const arc=(cx,y,r,ry)=>`M${cx-r} ${y}A${r} ${ry} 0 0 0 ${cx+r} ${y}`;
+const MOUNT_Y=NECK-HH/2+4;
+let phase=0,busy=false,tick=0;
+function leverPos(){const la=view+st.compRot+st.disk;return{x:st.compX+Math.cos(la)*(R+11),y:st.compY+HH/2-14+Math.sin(la)*RY*.8}}
+function targetPos(){
+ if(phase===0)return{x:62,y:140,r:54,t:'нажми на банку'};
+ if(phase===1)return{x:st.compX,y:st.compY,r:72,t:'нажми на отсек'};
+ if(phase===2)return{x:st.capX,y:st.capY-8,r:42,t:'нажми на крышку'};
+ if(phase===3){const p=leverPos();return{x:p.x,y:p.y,r:24,t:'нажми на рычаг'}}
+ if(phase===4)return{x:CX,y:NECK+160,r:72,t:'нажми на бутылку'};return null}
+function draw(){
+ const rot=view+st.compRot,cx=st.compX,top=st.compY-HH/2,bot=st.compY+HH/2;
+ const sx=Math.sin(st.shake*Math.PI*8)*10*Math.sin(st.shake*Math.PI);W.setAttribute('transform',`translate(${sx} 0)`);
+ const m=st.dissolve;document.getElementById('w1').setAttribute('stop-color',`rgb(${191+54*m|0},${224-30*m|0},${250-35*m|0})`);document.getElementById('w2').setAttribute('stop-color',`rgb(${127+105*m|0},${181-38*m|0},${232-50*m|0})`);
+ gJar.setAttribute('transform',`translate(62 140) rotate(${st.jarTilt})`);
+ const NT=top-7,NRr=R-5;
+ body.setAttribute('d',cyl(cx,top,bot,R,RY));seam.setAttribute('d',arc(cx,bot-11,R,RY));
+ layers.forEach((l,i)=>l.setAttribute('d',arc(cx,top+4+i*3.6,R,RY)));
+ neckR.setAttribute('d',cyl(cx,NT,top+2,NRr,RY-1));
+ topRim.setAttribute('cx',cx);topRim.setAttribute('cy',NT);topRim.setAttribute('rx',NRr);topRim.setAttribute('ry',RY-1);
+ const f=Math.min(1,st.fill*1.2);powderTop.setAttribute('cx',cx);powderTop.setAttribute('cy',NT+3);powderTop.setAttribute('rx',(NRr-5)*f);powderTop.setAttribute('ry',(RY-4)*f);powderTop.style.opacity=Math.min(1,st.fill*2)*(1-st.fall);
+ parts.forEach((p,i)=>{const a=rot+i*2*Math.PI/3;p.setAttribute('x1',cx+Math.cos(a)*8);p.setAttribute('y1',NT+Math.sin(a)*3);p.setAttribute('x2',cx+Math.cos(a)*(NRr-4));p.setAttribute('y2',NT+Math.sin(a)*(RY-3))});
+ hub.setAttribute('cx',cx);hub.setAttribute('cy',NT);hub.setAttribute('rx',8);hub.setAttribute('ry',3);
+ const la=rot+st.disk,front=Math.sin(la)>0,ly=bot-14+Math.sin(la)*RY*.8;
+ lvBar.setAttribute('x',cx+Math.cos(la)*(R+4)-9);lvBar.setAttribute('y',ly-5);lvKnob.setAttribute('cx',cx+Math.cos(la)*(R+13));lvKnob.setAttribute('cy',ly);
+ lvHit.setAttribute('cx',cx+Math.cos(la)*(R+11));lvHit.setAttribute('cy',ly);
+ (front?gFront:gBack).appendChild(lever);
+ gCap.setAttribute('transform',`translate(${st.capX} ${st.capY}) scale(${st.capS})`);
+ const cr=R+2,cry=RY+1,ca=view+st.capRot,cB=10,cT=-14,lT=-40;
+ collar.setAttribute('d',cyl(0,cT,cB,cr,cry));
+ // blue insert band on the collar (front-visible part only)
+ {let pts=[],pb=[];for(let k=0;k<=24;k++){const a=ca+.25+k/24*1.9;if(Math.sin(a)<.05)continue;const x=Math.cos(a)*(cr+.5),y=Math.sin(a)*cry;pts.push(`${x} ${cT+5+y}`);pb.unshift(`${x} ${cB-5+y}`)}
+  ins.setAttribute('d',pts.length>1?'M'+pts.join('L')+'L'+pb.join('L')+'Z':'')}
+ lid.setAttribute('d',`M${-cr+1} ${cT}L${-cr+3} ${lT}A${cr-3} ${cry} 0 0 1 ${cr-3} ${lT}L${cr-1} ${cT}A${cr-1} ${cry} 0 0 1 ${-cr+1} ${cT}Z`);
+ lidIn.setAttribute('x',-12);lidIn.setAttribute('y',lT+4);lidIn.setAttribute('width',24);lidIn.setAttribute('height',cT-lT-2);
+ lidTop.setAttribute('cx',0);lidTop.setAttribute('cy',lT);lidTop.setAttribute('rx',cr-3);lidTop.setAttribute('ry',cry);
+ lidHi.setAttribute('d',`M${-cr*.62} ${lT+6}L${-cr*.6} ${cT-4}`);
+ const ab=ca-1.1,bx=Math.cos(ab)*(cr+3),by=Math.sin(ab)*cry,bf=Math.sin(ab)>0;
+ btnR.setAttribute('x',bx-6.5);btnR.setAttribute('y',cT-22+by);btnC.setAttribute('cx',bx);btnC.setAttribute('cy',cT+4+by);
+ (bf?btnFront:btnBack).appendChild(btn);btn.style.opacity=Math.abs(Math.cos(ab))>.97&&!bf?0:1;
+ const fx=Math.PI/2-OPEN/2;iFix.setAttribute('d',sector(34,fx+OPEN,fx+2*Math.PI));iDisk.setAttribute('d',sector(32,fx+OPEN+st.disk,fx+2*Math.PI+st.disk));
+ iTxt.textContent=Math.abs(st.disk)<.12?'дно открыто':'дно закрыто';gInset.style.opacity=phase>=3?1:0;
+ const tp=busy?null:targetPos();gPoint.style.display=tp?'':'none';
+ if(tp){const k=(Math.sin(tick*4)+1)/2;ring.setAttribute('cx',tp.x);ring.setAttribute('cy',tp.y);ring.setAttribute('r',tp.r+k*8);ring.setAttribute('stroke-opacity',.95-k*.6);
+  ring2.setAttribute('cx',tp.x);ring2.setAttribute('cy',tp.y);ring2.setAttribute('r',tp.r);
+  ptxt.setAttribute('x',Math.min(320,Math.max(80,tp.x)));ptxt.setAttribute('y',(phase===2||phase===3||tp.y-tp.r-14<24)?tp.y+tp.r+22:tp.y-tp.r-14);ptxt.textContent='👆 '+tp.t}
+}
+function powder(dt){const bot=st.compY+HH/2,wtop=NECK+86;
+ PS.forEach(p=>{if(st.pour<=0){p.c.style.opacity=0;return}p.t=(p.t+dt*1.6)%1;const x0=92,y0=110,x1=st.compX+(Math.random()-.5)*20,y1=st.compY-HH/2-7,t=p.t;
+  p.c.setAttribute('cx',x0+(x1-x0)*t+(Math.random()-.5)*4);p.c.setAttribute('cy',y0+(y1-y0)*t-Math.sin(t*Math.PI)*26);p.c.style.opacity=st.pour});
+ P.forEach(p=>{if(st.fall<=0){p.s=0;p.c.style.opacity=0;return}
+  if(p.s===0&&Math.random()<dt*3){p.s=1;p.x=CX+(Math.random()-.5)*60;p.y=bot+2;p.vy=20+Math.random()*30}
+  if(p.s===1){p.vy+=500*dt;p.y+=p.vy*dt;if(p.y>wtop+8){p.s=2;p.y=wtop+10+Math.random()*150;p.x=CX+(Math.random()-.5)*108}}
+  p.c.setAttribute('cx',p.x);p.c.setAttribute('cy',p.y);p.c.style.opacity=p.s===0?0:(p.s===2?.85*(1-st.dissolve):.95)})}
+let anims=[];const ez=t=>t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2,lin=t=>t;
+const tw=(k,to,d,e=ez)=>new Promise(r=>anims.push({k,f:st[k],to,d,t:0,e,r}));
+const wait=ms=>new Promise(r=>setTimeout(r,ms));
+const status=document.getElementById('status'),steps=[...document.querySelectorAll('.step')];
+const msgs=['Нажми на банку - засыплем добавку в отсек','Добавка внутри и остаётся сухой. Нажми на отсек - он накрутится на бутылку','Отсек на бутылке. Нажми на крышку - закроем сверху','Можно в сумку - ничего не рассыплется. На тренировке нажми на рычаг сбоку отсека','Добавка в воде! Нажми на бутылку, чтобы встряхнуть','Готово: свежий напиток без комков. «МиксДринк» - то, с чем тренироваться удобнее'];
+const setStep=s=>{steps.forEach((e,i)=>{e.classList.toggle('on',i===s);e.classList.toggle('done',i<s)});status.textContent=msgs[s]};
+const need=['jar','comp','cap','lever','bottle'];
+function click(){try{const a=new(window.AudioContext||window.webkitAudioContext)(),o=a.createOscillator(),g=a.createGain();o.type='square';o.frequency.value=900;g.gain.setValueAtTime(.12,a.currentTime);g.gain.exponentialRampToValueAtTime(.001,a.currentTime+.06);o.connect(g);g.connect(a.destination);o.start();o.stop(a.currentTime+.07)}catch(e){}if(navigator.vibrate)navigator.vibrate(30)}
+function turnViewTo(want){const cur=view;let d=((want-cur)%(2*Math.PI)+3*Math.PI)%(2*Math.PI)-Math.PI;return new Promise(r=>anims.push({view:1,f:cur,to:cur+d,d:.8,t:0,e:ez,r}))}
+async function act(hit){if(busy||phase>4)return;
+ if(hit!==need[phase]){status.textContent=msgs[phase]+' (подсвечено кружком)';return}
+ busy=true;
+ if(phase===0){status.textContent='Засыпаем около 10 г добавки...';await tw('jarTilt',-62,.5);st.pour=1;await tw('fill',1,1.6,lin);st.pour=0;await tw('jarTilt',0,.5)}
+ else if(phase===1){status.textContent='Накручиваем отсек на горлышко...';await Promise.all([tw('compY',MOUNT_Y,1.5,lin),tw('compRot',st.compRot+Math.PI*4,1.5,lin)])}
+ else if(phase===2){status.textContent='Закручиваем крышку...';await Promise.all([tw('capX',CX,.8),tw('capY',MOUNT_Y-HH/2-8,.8),tw('capS',1,.8)]);await tw('capRot',st.capRot+Math.PI*3,1,lin);st.capOn=1;auto=false;await turnViewTo(.5-st.compRot-st.disk)}
+ else if(phase===3){status.textContent='Поворачиваем дно на ~160°...';await tw('disk',0,1.3);click();st.fall=1;await wait(1600)}
+ else if(phase===4){status.textContent='Встряхиваем...';await tw('shake',1,1.3,lin);st.shake=0;await tw('dissolve',1,.9)}
+ phase++;busy=false;setStep(phase)}
+let down=null,lxp=0;
+svg.addEventListener('pointerdown',e=>{const h=e.target.closest&&e.target.closest('[data-hit]');down={x:e.clientX,hit:h&&h.getAttribute('data-hit'),moved:false};lxp=e.clientX;try{svg.setPointerCapture(e.pointerId)}catch(_){}});
+svg.addEventListener('pointermove',e=>{if(!down)return;const d=e.clientX-lxp;lxp=e.clientX;if(Math.abs(e.clientX-down.x)>8)down.moved=true;if(down.moved&&phase!==3){auto=false;view+=d*.012;vel=d*.012}});
+svg.addEventListener('pointerup',()=>{if(down&&!down.moved&&down.hit)act(down.hit);down=null});
+svg.addEventListener('pointercancel',()=>down=null);
+function reset(){anims=[];st=INIT();phase=0;busy=false;auto=true;setStep(0)}
+document.getElementById('reset').onclick=reset;setStep(0);
+let last=performance.now();
+(function loop(now){const dt=Math.min(.05,(now-last)/1000);last=now;tick+=dt;
+ anims=anims.filter(a=>{a.t+=dt;const p=Math.min(1,a.t/a.d),v=a.f+(a.to-a.f)*a.e(p);if(a.view)view=v;else st[a.k]=v;if(p>=1){a.r();return false}return true});
+ if(auto)view+=dt*.5;else if(!down&&phase!==3){view+=vel;vel*=.93}
+ draw();powder(dt);requestAnimationFrame(loop)})(last);
+window.__act=act;window.__lever=leverPos;
+})();
+</script>
+</body></html>
